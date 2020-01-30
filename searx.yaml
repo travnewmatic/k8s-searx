@@ -233,3 +233,388 @@ kind: List
 metadata:
   resourceVersion: ""
   selfLink: ""
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  data:
+    rules.json: "[\n    {\n        \"name\": \"stats.searx.xyz\",\n        \"interval\":
+      300,\n        \"limit\": 10,\n        \"filters\": [\"Header:X-Forwarded-For=(2a01:4f8:161:542e::2|5.9.58.49)\"],\n
+      \       \"stop\": true,\n        \"actions\": [{ \"name\": \"log\"}]\n    },\n
+      \   {\n        \"name\": \"IP limit, all paths\",\n        \"interval\": 3,\n
+      \       \"limit\": 25,\n        \"aggregations\": [\"Header:X-Forwarded-For\"],\n
+      \       \"actions\": [\n            {\"name\": \"block\",\n             \"params\":
+      {\"message\": \"Rate limit exceeded, try again later.\"}}\n        ]\n    },\n
+      \   {\n        \"name\": \"useragent limit, all paths\",\n        \"interval\":
+      30,\n        \"limit\": 200,\n        \"aggregations\": [\"Header:X-Forwarded-For\",
+      \"Header:User-Agent\"],\n        \"stop\": true,\n        \"actions\": [\n            {\"name\":
+      \"block\",\n             \"params\": {\"message\": \"Rate limit exceeded, try
+      again later.\"}}\n        ]\n    },\n    {\n        \"name\": \"search request\",\n
+      \       \"filters\": [\"Param:q\", \"Path=^(/|/search)$\"],\n        \"subrules\":
+      [\n            {\n                \"name\": \"robot agent forbidden\",\n                \"limit\":
+      0,\n                \"stop\": true,\n                \"filters\": [\"Header:User-Agent=([Cc][Uu][Rr][Ll]|[wW]get|Scrapy|splash|JavaFX|FeedFetcher|python-requests|Go-http-client|Java|Jakarta|okhttp|HttpClient|Jersey|Python|libwww-perl|Ruby|SynHttpClient|UniversalFeedParser)\"],\n
+      \               \"actions\": [\n                    {\"name\": \"block\",\n
+      \                    \"params\": {\"message\": \"Rate limit exceeded\"}}\n                ]\n
+      \           },\n            {\n                \"name\": \"bot forbidden\",\n
+      \               \"limit\": 0,\n                \"stop\": true,\n                \"filters\":
+      [\"Header:User-Agent=(Googlebot|GoogleImageProxy|bingbot|Baiduspider|yacybot|YandexMobileBot|YandexBot|Yahoo!
+      Slurp|MJ12bot|AhrefsBot|archive.org_bot|msnbot|MJ12bot|SeznamBot|linkdexbot|Netvibes|SMTBot|zgrab|James
+      BOT|Sogou|Abonti|Pixray|Spinn3r|SemrushBot|Exabot|ZmEu|BLEXBot|bitlybot)\"],\n
+      \               \"actions\": [\n                    {\"name\": \"block\",\n
+      \                    \"params\": {\"message\": \"Rate limit exceeded\"}}\n                ]\n
+      \           },\n            {\n                \"name\": \"block missing accept-language\",\n
+      \               \"filters\": [\"!Header:Accept-Language\"],\n                \"limit\":
+      0,\n                \"stop\": true,\n                \"actions\": [\n                    {\"name\":
+      \"block\",\n                     \"params\": {\"message\": \"Rate limit exceeded\"}}\n
+      \               ]\n            },\n            {\n                \"name\":
+      \"block Connection:close\",\n                \"filters\": [\"Header:Connection=close\"],\n
+      \               \"limit\": 0,\n                \"stop\": true,\n                \"actions\":
+      [\n                    {\"name\": \"block\",\n                     \"params\":
+      {\"message\": \"Rate limit exceeded\"}}\n                ]\n            },\n
+      \           {\n                \"name\": \"block no brotli support\",\n                \"filters\":
+      [\"!Header:Accept-Encoding=[; ]?br[; ]?\"],\n                \"limit\": 0,\n
+      \               \"stop\": true,\n                \"actions\": [\n                    {\"name\":
+      \"block\",\n                     \"params\": {\"message\": \"Rate limit exceeded\"}}\n
+      \               ]\n            },\n            {\n                \"name\":
+      \"block accept everything\",\n                \"filters\": [\"!Header:Accept=text/html\"],\n
+      \               \"limit\": 0,\n                \"stop\": true,\n                \"actions\":
+      [\n                    {\"name\": \"block\",\n                     \"params\":
+      {\"message\": \"Rate limit exceeded\"}}\n                ]\n            },\n
+      \           {\n                \"name\": \"rss/json limit\",\n                \"interval\":
+      3600,\n                \"limit\": 4,\n                \"stop\": true,\n                \"filters\":
+      [\"Param:format=(csv|json|rss)\"],\n                \"aggregations\": [\"Header:X-Forwarded-For\"],\n
+      \               \"actions\": [\n                    {\"name\": \"block\",\n\t\t
+      \    \"params\": {\"message\": \"Rate limit exceeded, try again later.\"}}\n
+      \               ]\n            },\n            {\n                \"name\":
+      \"IP limit\",\n                \"interval\": 3,\n                \"limit\":
+      3,\n                \"aggregations\": [\"Header:X-Forwarded-For\"],\n                \"actions\":
+      [\n                    {\"name\": \"block\",\n                     \"params\":
+      {\"message\": \"Rate limit exceeded, try again later.\"}}\n                ]\n
+      \           },\n            {\n                \"name\": \"IP and useragent
+      limit\",\n                \"interval\": 600,\n                \"limit\": 60,\n
+      \               \"stop\": true,\n                \"aggregations\": [\"Header:X-Forwarded-For\",
+      \"Header:User-Agent\"],\n                \"actions\": [\n                    {\"name\":
+      \"block\",\n                     \"params\": {\"message\": \"Rate limit exceeded,
+      try again later.\"}}\n\t\t]\n            }\n        ]\n    }\n]\n"
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2020-01-19T08:22:44Z"
+    name: filtron
+    namespace: searx
+    resourceVersion: "1279490"
+    selfLink: /api/v1/namespaces/searx/configmaps/filtron
+    uid: e1c3a41a-c80c-46c5-86c7-c5ebd00ef4c6
+- apiVersion: v1
+  data:
+    settings.yml: "general:\r\n    debug : False # Debug mode, only for development\r\n
+      \   instance_name : \"searx\" # displayed name\r\n\r\nsearch:\r\n    safe_search
+      : 0 # Filter results. 0: None, 1: Moderate, 2: Strict\r\n    autocomplete :
+      \"duckduckgo\" # Existing autocomplete backends: \"dbpedia\", \"duckduckgo\",
+      \"google\", \"startpage\", \"wikipedia\" - leave blank to turn it off by default\r\n
+      \   language : \"en-US\"\r\n    ban_time_on_fail : 5 # ban time in seconds after
+      engine errors\r\n    max_ban_time_on_fail : 120 # max ban time in seconds after
+      engine errors\r\n\r\nserver:\r\n    port : 8888\r\n    bind_address : \"127.0.0.1\"
+      # address to listen on\r\n    secret_key : \"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\"
+      # change this!\r\n    base_url : \"https://searx.travnewmatic.com/\" # Set custom
+      base_url. Possible values: False or \"https://your.custom.host/location/\"\r\n
+      \   image_proxy : True # Proxying image results through searx\r\n    http_protocol_version
+      : \"1.0\"  # 1.0 and 1.1 are supported\r\n\r\nui:\r\n    static_path : \"\"
+      # Custom static path - leave it blank if you didn't change\r\n    templates_path
+      : \"\" # Custom templates path - leave it blank if you didn't change\r\n    default_theme
+      : oscar # ui theme\r\n    default_locale : \"\" # Default interface locale -
+      leave blank to detect from browser information or use codes from the 'locales'
+      config section\r\n    theme_args :\r\n        oscar_style : logicodev-dark #
+      default style of oscar\r\n\r\n# searx supports result proxification using an
+      external service: https://github.com/asciimoo/morty\r\n# uncomment below section
+      if you have running morty proxy\r\n# the key is base64 encoded (keep the !!binary
+      notation)\r\n# Note: since commit af77ec3, morty accepts a base64 encoded key.\r\nresult_proxy:\r\n
+      \   url : \"https://searx.travnewmatic.com/morty/\"\r\n    key : !!binary \"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx\"\r\n\r\noutgoing:
+      # communication with search engines\r\n    request_timeout : 30 # default timeout
+      in seconds, can be override by engine\r\n    # max_request_timeout: 10.0 # the
+      maximum timeout in seconds\r\n    useragent_suffix : \"\" # suffix of searx_useragent,
+      could contain informations like an email address to the administrator\r\n    pool_connections
+      : 100 # Number of different hosts\r\n    pool_maxsize : 10 # Number of simultaneous
+      requests by host\r\n# uncomment below section if you want to use a proxy\r\n#
+      see http://docs.python-requests.org/en/latest/user/advanced/#proxies\r\n# SOCKS
+      proxies are also supported: see http://docs.python-requests.org/en/master/user/advanced/#socks\r\n
+      \   proxies :\r\n        http : socks5://tor.tor.svc.cluster.local:9050\r\n
+      \       https: socks5://tor.tor.svc.cluster.local:9050\r\n# uncomment below
+      section only if you have more than one network interface\r\n# which can be the
+      source of outgoing search requests\r\n#    source_ips:\r\n#        - 1.1.1.1\r\n#
+      \       - 1.1.1.2\r\n\r\nengines:\r\n  - name: apk mirror\r\n    engine: apkmirror\r\n
+      \   timeout: 30\r\n    shortcut: apkm\r\n    disabled: True\r\n\r\n  - name
+      : arch linux wiki\r\n    engine : archlinux\r\n    shortcut : al\r\n\r\n  -
+      name : archive is\r\n    engine : xpath\r\n    search_url : https://archive.is/{query}\r\n
+      \   url_xpath : (//div[@class=\"TEXT-BLOCK\"]/a)/@href\r\n    title_xpath :
+      (//div[@class=\"TEXT-BLOCK\"]/a)\r\n    content_xpath : //div[@class=\"TEXT-BLOCK\"]/ul/li\r\n
+      \   categories : general\r\n    timeout : 30\r\n    disabled : True\r\n    shortcut
+      : ai\r\n\r\n  - name : arxiv\r\n    engine : arxiv\r\n    shortcut : arx\r\n
+      \   categories : science\r\n\r\n#  tmp suspended:  dh key too small\r\n#  -
+      name : base\r\n#    engine : base\r\n#    shortcut : bs\r\n\r\n  - name : wikipedia\r\n
+      \   engine : wikipedia\r\n    shortcut : wp\r\n    base_url : 'https://{language}.wikipedia.org/'\r\n\r\n
+      \ - name : bing\r\n    engine : bing\r\n    shortcut : bi\r\n\r\n  - name :
+      bing images\r\n    engine : bing_images\r\n    shortcut : bii\r\n\r\n  - name
+      : bing news\r\n    engine : bing_news\r\n    shortcut : bin\r\n\r\n  - name
+      : bing videos\r\n    engine : bing_videos\r\n    shortcut : biv\r\n\r\n  - name
+      : bitbucket\r\n    engine : xpath\r\n    paging : True\r\n    search_url : https://bitbucket.org/repo/all/{pageno}?name={query}\r\n
+      \   url_xpath : //article[@class=\"repo-summary\"]//a[@class=\"repo-link\"]/@href\r\n
+      \   title_xpath : //article[@class=\"repo-summary\"]//a[@class=\"repo-link\"]\r\n
+      \   content_xpath : //article[@class=\"repo-summary\"]/p\r\n    categories :
+      it\r\n    disabled : True\r\n    shortcut : bb\r\n\r\n  - name : btdigg\r\n
+      \   engine : btdigg\r\n    shortcut : bt\r\n\r\n  - name : ccc-tv\r\n    engine
+      : xpath\r\n    paging : False\r\n    search_url : https://media.ccc.de/search/?q={query}\r\n
+      \   url_xpath : //div[@class=\"caption\"]/h3/a/@href\r\n    title_xpath : //div[@class=\"caption\"]/h3/a/text()\r\n
+      \   content_xpath : //div[@class=\"caption\"]/h4/@title\r\n    categories :
+      videos\r\n    disabled : True\r\n    shortcut : c3tv\r\n\r\n  - name : crossref\r\n
+      \   engine : json_engine\r\n    paging : True\r\n    search_url : https://search.crossref.org/dois?q={query}&page={pageno}\r\n
+      \   url_query : doi\r\n    title_query : title\r\n    content_query : fullCitation\r\n
+      \   categories : science\r\n    shortcut : cr\r\n\r\n  - name : currency\r\n
+      \   engine : currency_convert\r\n    categories : general\r\n    shortcut :
+      cc\r\n\r\n  - name : deezer\r\n    engine : deezer\r\n    shortcut : dz\r\n\r\n
+      \ - name : deviantart\r\n    engine : deviantart\r\n    shortcut : da\r\n\r\n
+      \ - name : ddg definitions\r\n    engine : duckduckgo_definitions\r\n    shortcut
+      : ddd\r\n    weight : 2\r\n\r\n# cloudflare protected\r\n#  - name : digbt\r\n#
+      \   engine : digbt\r\n#    shortcut : dbt\r\n#    disabled : True\r\n\r\n  -
+      name : digg\r\n    engine : digg\r\n    shortcut : dg\r\n\r\n  - name : erowid\r\n
+      \   engine : xpath\r\n    paging : True\r\n    first_page_num : 0\r\n    page_size
+      : 30\r\n    search_url : https://www.erowid.org/search.php?q={query}&s={pageno}\r\n
+      \   url_xpath : //dl[@class=\"results-list\"]/dt[@class=\"result-title\"]/a/@href\r\n
+      \   title_xpath : //dl[@class=\"results-list\"]/dt[@class=\"result-title\"]/a/text()\r\n
+      \   content_xpath : //dl[@class=\"results-list\"]/dd[@class=\"result-details\"]\r\n
+      \   categories : general\r\n    shortcut : ew\r\n    disabled : True\r\n\r\n
+      \ - name : wikidata\r\n    engine : wikidata\r\n    shortcut : wd\r\n    weight
+      : 2\r\n\r\n  - name : duckduckgo\r\n    engine : duckduckgo\r\n    shortcut
+      : ddg\r\n\r\n  - name : duckduckgo images\r\n    engine : duckduckgo_images\r\n
+      \   shortcut : ddi\r\n\r\n  - name : etymonline\r\n    engine : xpath\r\n    paging
+      : True\r\n    search_url : https://etymonline.com/search?page={pageno}&q={query}\r\n
+      \   url_xpath : //a[contains(@class, \"word__name--\")]/@href\r\n    title_xpath
+      : //a[contains(@class, \"word__name--\")]\r\n    content_xpath : //section[contains(@class,
+      \"word__defination\")]\r\n    first_page_num : 1\r\n    shortcut : et\r\n    disabled
+      : True\r\n\r\n  - name : faroo\r\n    engine : faroo\r\n    shortcut : fa\r\n
+      \   disabled : True\r\n\r\n  - name : 1x\r\n    engine : www1x\r\n    shortcut
+      : 1x\r\n    disabled : True\r\n\r\n  - name : fdroid\r\n    engine : fdroid\r\n
+      \   shortcut : fd\r\n    disabled : True\r\n\r\n  - name : flickr\r\n    categories
+      : images\r\n    shortcut : fl\r\n# You can use the engine using the official
+      stable API, but you need an API key\r\n# See : https://www.flickr.com/services/apps/create/\r\n#
+      \   engine : flickr\r\n#    api_key: 'apikey' # required!\r\n# Or you can use
+      the html non-stable engine, activated by default\r\n    engine : flickr_noapi\r\n\r\n
+      \ - name : free software directory\r\n    engine : mediawiki\r\n    shortcut
+      : fsd\r\n    categories : it\r\n    base_url : https://directory.fsf.org/\r\n
+      \   number_of_results : 5\r\n# what part of a page matches the query string:
+      title, text, nearmatch\r\n# title - query matches title, text - query matches
+      the text of page, nearmatch - nearmatch in title\r\n    search_type : title\r\n
+      \   disabled : True\r\n\r\n  - name : frinkiac\r\n    engine : frinkiac\r\n
+      \   shortcut : frk\r\n    disabled : True\r\n\r\n  - name : genius\r\n    engine
+      : genius\r\n    shortcut : gen\r\n\r\n  - name : gigablast\r\n    engine : gigablast\r\n
+      \   shortcut : gb\r\n    disabled: True\r\n\r\n  - name : gentoo\r\n    engine
+      : gentoo\r\n    shortcut : ge\r\n\r\n  - name : gitlab\r\n    engine : json_engine\r\n
+      \   paging : True\r\n    search_url : https://gitlab.com/api/v4/projects?search={query}&page={pageno}\r\n
+      \   url_query : web_url\r\n    title_query : name_with_namespace\r\n    content_query
+      : description\r\n    page_size : 20\r\n    categories : it\r\n    shortcut :
+      gl\r\n    disabled : True\r\n\r\n  - name : github\r\n    engine : github\r\n
+      \   shortcut : gh\r\n\r\n  - name : google\r\n    engine : google\r\n    shortcut
+      : go\r\n    disabled : True\r\n\r\n  - name : google images\r\n    engine :
+      google_images\r\n    shortcut : goi\r\n    disabled : True\r\n\r\n  - name :
+      google news\r\n    engine : google_news\r\n    shortcut : gon\r\n    disabled
+      : True\r\n\r\n  - name : google videos\r\n    engine : google_videos\r\n    shortcut
+      : gov\r\n    disabled : True\r\n\r\n  - name : google scholar\r\n    engine
+      : xpath\r\n    paging : True\r\n    search_url : https://scholar.google.com/scholar?start={pageno}&q={query}&hl=en&as_sdt=0,5&as_vis=1\r\n
+      \   results_xpath : //div[contains(@class, \"gs_r\")]/div[@class=\"gs_ri\"]\r\n
+      \   url_xpath : .//h3/a/@href\r\n    title_xpath : .//h3/a\r\n    content_xpath
+      : .//div[@class=\"gs_rs\"]\r\n    suggestion_xpath : //div[@id=\"gs_res_ccl_top\"]//a/b\r\n
+      \   page_size : 10\r\n    first_page_num : 0\r\n    categories : science\r\n
+      \   shortcut : gos\r\n    disabled : True\r\n\r\n  - name : google play apps\r\n
+      \   engine : xpath\r\n    search_url : https://play.google.com/store/search?q={query}&c=apps\r\n
+      \   results_xpath : '//div[@class=\"WHE7ib mpg5gc\"]'\r\n    title_xpath : './/div[@class=\"RZEgze\"]//div[@title
+      and not(@title=\"\")]/a'\r\n    url_xpath : './/div[@class=\"RZEgze\"]//div[@title
+      and not(@title=\"\")]/a/@href'\r\n    content_xpath : './/div[@class=\"RZEgze\"]//a[@class=\"mnKHRc\"]'\r\n
+      \   thumbnail_xpath : './/div[@class=\"uzcko\"]/div/span[1]//img/@data-src'\r\n
+      \   categories : files\r\n    shortcut : gpa\r\n    disabled : True\r\n\r\n
+      \ - name : google play movies\r\n    engine : xpath\r\n    search_url : https://play.google.com/store/search?q={query}&c=movies\r\n
+      \   results_xpath : '//div[@class=\"WHE7ib mpg5gc\"]'\r\n    title_xpath : './/div[@class=\"RZEgze\"]//div[@title
+      and not(@title=\"\")]/a'\r\n    url_xpath : './/div[@class=\"RZEgze\"]//div[@title
+      and not(@title=\"\")]/a/@href'\r\n    content_xpath : './/div[@class=\"RZEgze\"]//a[@class=\"mnKHRc\"]'\r\n
+      \   thumbnail_xpath : './/div[@class=\"uzcko\"]/div/span[1]//img/@data-src'\r\n
+      \   categories : videos\r\n    shortcut : gpm\r\n    disabled : True\r\n\r\n
+      \ - name : google play music\r\n    engine : xpath\r\n    search_url : https://play.google.com/store/search?q={query}&c=music\r\n
+      \   results_xpath : '//div[@class=\"WHE7ib mpg5gc\"]'\r\n    title_xpath : './/div[@class=\"RZEgze\"]//div[@title
+      and not(@title=\"\")]/a'\r\n    url_xpath : './/div[@class=\"RZEgze\"]//div[@title
+      and not(@title=\"\")]/a/@href'\r\n    content_xpath : './/div[@class=\"RZEgze\"]//a[@class=\"mnKHRc\"]'\r\n
+      \   thumbnail_xpath : './/div[@class=\"uzcko\"]/div/span[1]//img/@data-src'\r\n
+      \   categories : music\r\n    shortcut : gps\r\n    disabled : True\r\n\r\n
+      \ - name : geektimes\r\n    engine : xpath\r\n    paging : True\r\n    search_url
+      : https://geektimes.ru/search/page{pageno}/?q={query}\r\n    url_xpath : //article[contains(@class,
+      \"post\")]//a[@class=\"post__title_link\"]/@href\r\n    title_xpath : //article[contains(@class,
+      \"post\")]//a[@class=\"post__title_link\"]\r\n    content_xpath : //article[contains(@class,
+      \"post\")]//div[contains(@class, \"post__text\")]\r\n    categories : it\r\n
+      \   disabled : True\r\n    shortcut : gt\r\n\r\n  - name : habrahabr\r\n    engine
+      : xpath\r\n    paging : True\r\n    search_url : https://habrahabr.ru/search/page{pageno}/?q={query}\r\n
+      \   url_xpath : //article[contains(@class, \"post\")]//a[@class=\"post__title_link\"]/@href\r\n
+      \   title_xpath : //article[contains(@class, \"post\")]//a[@class=\"post__title_link\"]\r\n
+      \   content_xpath : //article[contains(@class, \"post\")]//div[contains(@class,
+      \"post__text\")]\r\n    categories : it\r\n    disabled : True\r\n    shortcut
+      : habr\r\n\r\n  - name : hoogle\r\n    engine : json_engine\r\n    paging :
+      True\r\n    search_url : https://www.haskell.org/hoogle/?mode=json&hoogle={query}&start={pageno}\r\n
+      \   results_query : results\r\n    url_query : location\r\n    title_query :
+      self\r\n    content_query : docs\r\n    page_size : 20\r\n    categories : it\r\n
+      \   shortcut : ho\r\n\r\n  - name : ina\r\n    engine : ina\r\n    shortcut
+      : in\r\n    disabled : True\r\n\r\n  - name : invidious\r\n    engine : invidious\r\n
+      \   base_url : 'https://invidio.us/'\r\n    shortcut: iv\r\n\r\n  - name: kickass\r\n
+      \   engine : kickass\r\n    shortcut : kc\r\n\r\n  - name : library genesis\r\n
+      \   engine : xpath\r\n    search_url : https://libgen.is/search.php?req={query}\r\n
+      \   url_xpath : //a[contains(@href,\"bookfi.net\")]/@href\r\n    title_xpath
+      : //a[contains(@href,\"book/\")]/text()[1]\r\n    content_xpath : //td/a[1][contains(@href,\"=author\")]/text()\r\n
+      \   categories : general\r\n    disabled : True\r\n    shortcut : lg\r\n\r\n
+      \ - name : lobste.rs\r\n    engine : xpath\r\n    search_url : https://lobste.rs/search?utf8=%E2%9C%93&q={query}&what=stories&order=relevance\r\n
+      \   results_xpath : //li[contains(@class, \"story\")]\r\n    url_xpath : .//span[@class=\"link\"]/a/@href\r\n
+      \   title_xpath : .//span[@class=\"link\"]/a\r\n    content_xpath : .//a[@class=\"domain\"]\r\n
+      \   categories : it\r\n    shortcut : lo\r\n\r\n  - name : microsoft academic\r\n
+      \   engine : microsoft_academic\r\n    categories : science\r\n    shortcut
+      : ma\r\n\r\n  - name : mixcloud\r\n    engine : mixcloud\r\n    shortcut : mc\r\n\r\n
+      \ - name : npm\r\n    engine : json_engine\r\n    paging : True\r\n    search_url
+      : https://api.npms.io/v2/search?q={query}&size=25&from={pageno}\r\n    results_query
+      : results\r\n    url_query : package/links/npm\r\n    title_query : package/name\r\n
+      \   content_query : package/description\r\n    page_size : 25\r\n    categories
+      : it\r\n    disabled: True\r\n    shortcut : npm\r\n\r\n  - name : nyaa\r\n
+      \   engine : nyaa\r\n    shortcut : nt\r\n\r\n  - name : acgsou\r\n    engine
+      : acgsou\r\n    shortcut : acg\r\n    disabled : True\r\n\r\n  - name : openairedatasets\r\n
+      \   engine : json_engine\r\n    paging : True\r\n    search_url : https://api.openaire.eu/search/datasets?format=json&page={pageno}&size=10&title={query}\r\n
+      \   results_query : response/results/result\r\n    url_query : metadata/oaf:entity/oaf:result/children/instance/webresource/url/$\r\n
+      \   title_query : metadata/oaf:entity/oaf:result/title/$\r\n    content_query
+      : metadata/oaf:entity/oaf:result/description/$\r\n    categories : science\r\n
+      \   shortcut : oad\r\n\r\n  - name : openairepublications\r\n    engine : json_engine\r\n
+      \   paging : True\r\n    search_url : https://api.openaire.eu/search/publications?format=json&page={pageno}&size=10&title={query}\r\n
+      \   results_query : response/results/result\r\n    url_query : metadata/oaf:entity/oaf:result/children/instance/webresource/url/$\r\n
+      \   title_query : metadata/oaf:entity/oaf:result/title/$\r\n    content_query
+      : metadata/oaf:entity/oaf:result/description/$\r\n    categories : science\r\n
+      \   shortcut : oap\r\n\r\n  - name : openstreetmap\r\n    engine : openstreetmap\r\n
+      \   shortcut : osm\r\n\r\n  - name : openrepos\r\n    engine : xpath\r\n    paging
+      : True\r\n    search_url : https://openrepos.net/search/node/{query}?page={pageno}\r\n
+      \   url_xpath : //li[@class=\"search-result\"]//h3[@class=\"title\"]/a/@href\r\n
+      \   title_xpath : //li[@class=\"search-result\"]//h3[@class=\"title\"]/a\r\n
+      \   content_xpath : //li[@class=\"search-result\"]//div[@class=\"search-snippet-info\"]//p[@class=\"search-snippet\"]\r\n
+      \   categories : files\r\n    disabled : True\r\n    shortcut : or\r\n\r\n  -
+      name : pdbe\r\n    engine : pdbe\r\n    shortcut : pdb\r\n# Hide obsolete PDB
+      entries.\r\n# Default is not to hide obsolete structures\r\n#    hide_obsolete
+      : False\r\n\r\n  - name : photon\r\n    engine : photon\r\n    shortcut : ph\r\n\r\n
+      \ - name : piratebay\r\n    engine : piratebay\r\n    shortcut : tpb\r\n    url:
+      https://pirateproxy.red/\r\n\r\n  - name : pubmed\r\n    engine : pubmed\r\n
+      \   shortcut : pub\r\n    categories: science\r\n\r\n  - name : qwant\r\n    engine
+      : qwant\r\n    shortcut : qw\r\n    categories : general\r\n\r\n  - name : qwant
+      images\r\n    engine : qwant\r\n    shortcut : qwi\r\n    categories : images\r\n\r\n
+      \ - name : qwant news\r\n    engine : qwant\r\n    shortcut : qwn\r\n    categories
+      : news\r\n\r\n  - name : qwant social\r\n    engine : qwant\r\n    shortcut
+      : qws\r\n    categories : social media\r\n\r\n  - name : reddit\r\n    engine
+      : reddit\r\n    shortcut : re\r\n    page_size : 25\r\n\r\n# tmp suspended:
+      bad certificate\r\n#  - name : scanr structures\r\n#    shortcut: scs\r\n#    engine
+      : scanr_structures\r\n#    disabled : True\r\n\r\n  - name : soundcloud\r\n
+      \   engine : soundcloud\r\n    shortcut : sc\r\n\r\n  - name : stackoverflow\r\n
+      \   engine : stackoverflow\r\n    shortcut : st\r\n\r\n  - name : searchcode
+      doc\r\n    engine : searchcode_doc\r\n    shortcut : scd\r\n\r\n  - name : searchcode
+      code\r\n    engine : searchcode_code\r\n    shortcut : scc\r\n    disabled :
+      True\r\n\r\n  - name : framalibre\r\n    engine : framalibre\r\n    shortcut
+      : frl\r\n\r\n#  - name : searx\r\n#    engine : searx_engine\r\n#    shortcut
+      : se\r\n#    instance_urls :\r\n#        - http://127.0.0.1:8888/\r\n#        -
+      ...\r\n#    disabled : True\r\n\r\n  - name : semantic scholar\r\n    engine
+      : xpath\r\n    paging : True\r\n    search_url : https://www.semanticscholar.org/search?q={query}&sort=relevance&page={pageno}&ae=false\r\n
+      \   results_xpath : //article\r\n    url_xpath : .//div[@class=\"search-result-title\"]/a/@href\r\n
+      \   title_xpath : .//div[@class=\"search-result-title\"]/a\r\n    content_xpath
+      : .//div[@class=\"search-result-abstract\"]\r\n    shortcut : se\r\n    categories
+      : science\r\n\r\n# Spotify needs API credentials\r\n#  - name : spotify\r\n#
+      \   engine : spotify\r\n#    shortcut : stf\r\n#    api_client_id : *******\r\n#
+      \   api_client_secret : *******\r\n\r\n  - name : startpage\r\n    engine :
+      startpage\r\n    shortcut : sp\r\n    disabled : True\r\n\r\n  - name : tokyotoshokan\r\n
+      \   engine : tokyotoshokan\r\n    shortcut : tt\r\n\r\n  - name : torrentz\r\n
+      \   engine : torrentz\r\n    shortcut : tor\r\n    url: https://torrentz2.eu/\r\n\r\n
+      \ - name : twitter\r\n    engine : twitter\r\n    shortcut : tw\r\n\r\n# maybe
+      in a fun category\r\n#  - name : uncyclopedia\r\n#    engine : mediawiki\r\n#
+      \   shortcut : unc\r\n#    base_url : https://uncyclopedia.wikia.com/\r\n#    number_of_results
+      : 5\r\n\r\n# tmp suspended - too slow, too many errors\r\n#  - name : urbandictionary\r\n#
+      \   engine        : xpath\r\n#    search_url    : http://www.urbandictionary.com/define.php?term={query}\r\n#
+      \   url_xpath     : //*[@class=\"word\"]/@href\r\n#    title_xpath   : //*[@class=\"def-header\"]\r\n#
+      \   content_xpath : //*[@class=\"meaning\"]\r\n#    shortcut : ud\r\n\r\n  -
+      name : unsplash\r\n    engine : unsplash\r\n    disabled: True\r\n    shortcut
+      : us\r\n\r\n  - name : yahoo\r\n    engine : yahoo\r\n    shortcut : yh\r\n\r\n
+      \ - name : yandex\r\n    engine : yandex\r\n    shortcut : yn\r\n    disabled
+      : True\r\n\r\n  - name : yahoo news\r\n    engine : yahoo_news\r\n    shortcut
+      : yhn\r\n\r\n  - name : youtube\r\n    shortcut : yt\r\n    # You can use the
+      engine using the official stable API, but you need an API key\r\n    # See :
+      https://console.developers.google.com/project\r\n    #    engine : youtube_api\r\n
+      \   #    api_key: 'apikey' # required!\r\n    # Or you can use the html non-stable
+      engine, activated by default\r\n    engine : youtube_noapi\r\n\r\n  - name :
+      dailymotion\r\n    engine : dailymotion\r\n    shortcut : dm\r\n\r\n  - name
+      : vimeo\r\n    engine : vimeo\r\n    shortcut : vm\r\n\r\n  - name : wolframalpha\r\n
+      \   shortcut : wa\r\n    # You can use the engine using the official stable
+      API, but you need an API key\r\n    # See : http://products.wolframalpha.com/api/\r\n
+      \   # engine : wolframalpha_api\r\n    # api_key: '' # required!\r\n    engine
+      : wolframalpha_noapi\r\n    categories : science\r\n\r\n  - name : dictzone\r\n
+      \   engine : dictzone\r\n    shortcut : dc\r\n\r\n  - name : mymemory translated\r\n
+      \   engine : translated\r\n    shortcut : tl\r\n    disabled : True\r\n    #
+      You can use without an API key, but you are limited to 1000 words/day\r\n    #
+      See : http://mymemory.translated.net/doc/usagelimits.php\r\n    # api_key :
+      ''\r\n\r\n  - name : voat\r\n    engine: xpath\r\n    shortcut: vo\r\n    categories:
+      social media\r\n    search_url : https://searchvoat.co/?t={query}\r\n    url_xpath
+      : //div[@class=\"entry\"]//p[@class=\"title\"]/a/@href\r\n    title_xpath :
+      //div[@class=\"entry\"]//p[@class=\"title\"]/a/text()\r\n    content_xpath :
+      //div[@class=\"entry\"]//span[@class=\"domain\"]/a/text()\r\n    disabled :
+      True\r\n\r\n  - name : 1337x\r\n    engine : 1337x\r\n    shortcut : 1337x\r\n
+      \   disabled : True\r\n\r\n  - name : duden\r\n    engine : duden\r\n    shortcut
+      : du\r\n    disabled : True\r\n\r\n  - name : seznam\r\n    shortcut: szn\r\n
+      \   engine: xpath\r\n    paging : True\r\n    search_url : https://search.seznam.cz/?q={query}&count=10&from={pageno}\r\n
+      \   results_xpath: //div[@class=\"Page-content\"]//div[contains(@class, \"Result
+      \")]\r\n    url_xpath : ./h3/a/@href\r\n    title_xpath : ./h3\r\n    content_xpath
+      : .//p[@class=\"Result-description\"]\r\n    suggestion_xpath: //div[@class=\"Related-container\"]//div[@class=\"RelatedItem\"]/div/span/a\r\n
+      \   first_page_num : 0\r\n    page_size : 10\r\n    disabled : True\r\n\r\n
+      \ - name : mojeek\r\n    shortcut: mjk\r\n    engine: xpath\r\n    paging :
+      True\r\n    search_url : https://www.mojeek.com/search?q={query}&s={pageno}\r\n
+      \   results_xpath: /html/body//div[@class=\"results\"]/ul[@class=\"results-standard\"]/li\r\n
+      \   url_xpath : ./h2/a/@href\r\n    title_xpath : ./h2\r\n    content_xpath
+      : ./p[@class=\"s\"]\r\n    suggestion_xpath : /html/body//div[@class=\"top-info\"]/p[@class=\"top-info
+      spell\"]/a\r\n    first_page_num : 0\r\n    page_size : 10\r\n    disabled :
+      True\r\n\r\n  - name : seedpeer\r\n    shortcut : speu\r\n    engine : seedpeer\r\n
+      \   categories: files, music, videos\r\n\r\n#  - name : yacy\r\n#    engine
+      : yacy\r\n#    shortcut : ya\r\n#    base_url : 'http://localhost:8090'\r\n#
+      \   number_of_results : 5\r\n\r\n# Doku engine lets you access to any Doku wiki
+      instance:\r\n# A public one or a privete/corporate one.\r\n#  - name : ubuntuwiki\r\n#
+      \   engine : doku\r\n#    shortcut : uw\r\n#    base_url : 'http://doc.ubuntu-fr.org'\r\n\r\nlocales:\r\n
+      \   en : English\r\n    ar : العَرَبِيَّة (Arabic)\r\n    bg : Български (Bulgarian)\r\n
+      \   ca : Català (Catalan)\r\n    cs : Čeština (Czech)\r\n    cy : Cymraeg (Welsh)\r\n
+      \   da : Dansk (Danish)\r\n    de : Deutsch (German)\r\n    el_GR : Ελληνικά
+      (Greek_Greece)\r\n    eo : Esperanto (Esperanto)\r\n    es : Español (Spanish)\r\n
+      \   eu : Euskara (Basque)\r\n    fa_IR : (fārsī) فارسى (Persian)\r\n    fi :
+      Suomi (Finnish)\r\n    fil : Wikang Filipino (Filipino)\r\n    fr : Français
+      (French)\r\n    gl : Galego (Galician)\r\n    he : עברית (Hebrew)\r\n    hr
+      : Hrvatski (Croatian)\r\n    hu : Magyar (Hungarian)\r\n    ia : Interlingua
+      (Interlingua)\r\n    it : Italiano (Italian)\r\n    ja : 日本語 (Japanese)\r\n
+      \   nl : Nederlands (Dutch)\r\n    nl_BE : Vlaams (Dutch_Belgium)\r\n    pl
+      : Polski (Polish)\r\n    pt : Português (Portuguese)\r\n    pt_BR : Português
+      (Portuguese_Brazil)\r\n    ro : Română (Romanian)\r\n    ru : Русский (Russian)\r\n
+      \   sk : Slovenčina (Slovak)\r\n    sl : Slovenski (Slovene)\r\n    sr : српски
+      (Serbian)\r\n    sv : Svenska (Swedish)\r\n    te : తెలుగు (telugu)\r\n    tr
+      : Türkçe (Turkish)\r\n    uk : українська мова (Ukrainian)\r\n    vi : tiếng
+      việt (Vietnamese)\r\n    zh : 中文 (Chinese)\r\n    zh_TW : 國語 (Taiwanese Mandarin)\r\n\r\ndoi_resolvers
+      :\r\n  oadoi.org : 'https://oadoi.org/'\r\n  doi.org : 'https://doi.org/'\r\n
+      \ doai.io  : 'https://doai.io/'\r\n  sci-hub.tw : 'https://sci-hub.tw/'\r\n\r\ndefault_doi_resolver
+      : 'oadoi.org'\r\n"
+    uwsgi.ini: "[uwsgi]\r\n# Who will run the code\r\nuid = searx\r\ngid = searx\r\n\r\n#
+      Number of workers (usually CPU count)\r\nworkers = 4\r\n\r\n# The right granted
+      on the created socket\r\nchmod-socket = 666\r\n\r\n# Plugin to use and interpretor
+      config\r\nsingle-interpreter = true\r\nmaster = true\r\nplugin = python3\r\nlazy-apps
+      = true\r\nenable-threads = true\r\n\r\n# Module to import\r\nmodule = searx.webapp\r\n\r\n#
+      Virtualenv and python path\r\npythonpath = /usr/local/searx/\r\nchdir = /usr/local/searx/searx/\r\n\r\n#
+      Disable logging for privacy\r\ndisable-logging=True\r\n\r\n# But keep errors
+      for 2 days\r\ntouch-logrotate = /run/uwsgi-logrotate\r\nunique-cron = 15 0 -1
+      -1 -1 { touch /run/uwsgi-logrotate  }\r\nlog-backupname = /var/log/uwsgi/uwsgi.log.1\r\nlogto
+      = /var/log/uwsgi/uwsgi.log\r\n"
+  kind: ConfigMap
+  metadata:
+    creationTimestamp: "2020-01-20T04:51:16Z"
+    name: searx
+    namespace: searx
+    resourceVersion: "1630456"
+    selfLink: /api/v1/namespaces/searx/configmaps/searx
+    uid: b5d32f35-d01f-4247-a79d-5974a6ec4d5f
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""

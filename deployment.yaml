@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: searx
+  name: searx
+  namespace: searx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: searx
+  template:
+    metadata:
+      labels:
+        app: searx
+    spec:
+      containers:
+      - args:
+        - -timeout
+        - "6"
+        - -ipv6
+        env:
+        - name: MORTY_KEY
+          value: redacted
+        - name: MORTY_ADDRESS
+          value: 0.0.0.0:3000
+        image: dalf/morty:latest
+        imagePullPolicy: Always
+        name: morty
+        ports:
+        - containerPort: 3000
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      - env:
+        - name: MORTY_URL
+          value: https://searx.travnewmatic.com/morty/
+        - name: MORTY_KEY
+          value: redacted
+        image: searx/searx:latest
+        imagePullPolicy: Always
+        name: searx
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always

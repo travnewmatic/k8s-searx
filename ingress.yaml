@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  name: searx
+  namespace: searx
+spec:
+  rules:
+  - host: searx.travnewmatic.com
+    http:
+      paths:
+      - backend:
+          serviceName: morty
+          servicePort: 3000
+        path: /morty/
+        pathType: ImplementationSpecific
+      - backend:
+          serviceName: searx
+          servicePort: 8080
+        path: /
+        pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - searx.travnewmatic.com
+    secretName: searx
